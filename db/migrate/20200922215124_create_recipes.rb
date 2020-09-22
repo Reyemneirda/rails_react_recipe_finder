@@ -4,7 +4,7 @@ class CreateRecipes < ActiveRecord::Migration[6.0]
       t.string :rate
       t.string :author_tip
       t.string :budget
-      t.string :prep_time, null: false
+      t.string :prep_time,
       t.string :name, null: false
       t.string :author
       t.string :difficulty
@@ -14,7 +14,7 @@ class CreateRecipes < ActiveRecord::Migration[6.0]
       t.string :image
       t.string :nb_comment
       t.string 'tags', array: true
-      t.string 'ingredients', array: true, null: false
+      t.string 'ingredients', array: true
 
       t.timestamps
     end
