@@ -30,7 +30,6 @@ class Api::V0::RecipesController < ApplicationController
     end
   
     def show
-      recipe = Recipe.find(params[:id])
       if recipe
         puts recipe
         render json: recipe
@@ -40,11 +39,16 @@ class Api::V0::RecipesController < ApplicationController
     end
   
     def destroy
+      recipe&.destroy
+      render json: { message: 'Recipe deleted!' }
     end
     private
 
-  def recipe_params
-    params.permit(:name, :image, :ingredients, :tags, :rate, :author_tip, :budget, :prep_time, :name, 
-    :author, :difficulty, :people_quantity, :cook_time, :total_time, :image, :nb_comment)
-  end
+    def recipe_params
+      params.permit(:name, :image, :ingredients, :tags, :rate, :author_tip, :budget, :prep_time, :name, 
+      :author, :difficulty, :people_quantity, :cook_time, :total_time, :image, :nb_comment)
+    end
+    def recipe
+      @recipe ||= Recipe.find(params[:id])
+    end
   end
