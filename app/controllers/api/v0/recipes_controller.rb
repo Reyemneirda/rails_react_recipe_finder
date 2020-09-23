@@ -16,6 +16,13 @@ class Api::V0::RecipesController < ApplicationController
     end
   
     def show
+      recipe = Recipe.find(params[:id])
+      if recipe
+        puts recipe
+        render json: recipe
+      else
+        render json: recipe.errors
+      end
     end
   
     def destroy
