@@ -11,7 +11,6 @@ class Recipes extends React.Component {
       loading: false,
       recipes: [],
       term: '',
-      autoCompleteResults: [],
       itemSelected: {},
       showItemSelected: false
     };
@@ -29,7 +28,7 @@ class Recipes extends React.Component {
           }
           throw new Error("Network response was not ok.");
         })
-        .then(response => this.setState({ autoCompleteResults: response, recipes: response, loading: false  }))
+        .then(response => this.setState({ recipes: response, loading: false  }))
     });
   }
 
@@ -78,14 +77,7 @@ class Recipes extends React.Component {
     return (
       <>
         <div className="row p-3 bg-light">
-          <div className="col-md-6">
-            <div className="text-left">
-                <Link to="/recipe" className="btn btn-outline-secondary">
-                  Nouvelle recette
-                </Link>
-            </div>
-          </div>
-          <div className="col-md-6">
+          <div className="col-md-6 offset-6">
             <div className="text-right">
                   <Link to="/" className="btn btn-outline-dark">
                   Accueil
