@@ -5,6 +5,8 @@ class Recipe extends React.Component {
   constructor(props) {
     super(props);
     this.state = { recipe: {ingredients:"", tags:""}, similar: []};
+    this.deleteRecipe = this.deleteRecipe.bind(this);
+
   } 
 
   getSimilarRecipes(){
@@ -45,6 +47,31 @@ class Recipe extends React.Component {
           this.props.history.push("/recipes")
         });
       
+  }
+  deleteRecipe() {
+    const {
+      match: {
+        params: { id }
+      }
+    } = this.props;
+    const url = `/api/v0/destroy/${id}`;
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+
+    fetch(url, {
+      method: "DELETE",
+      headers: {
+        "X-CSRF-Token": token,
+        "Content-Type": "application/json"
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Network response was not ok.");
+      })
+      .then(() => this.props.history.push("/recipes"))
+      .catch(error => console.log(error.message));
   }
   
   render() {
@@ -97,9 +124,9 @@ class Recipe extends React.Component {
 
     return (
       <div className="">
-        <div  style={{ backgroundImage: `url(${recipe.image})`, backgroundSize:"cover" }} className="position-relative d-flex align-items-center justify-content-center p-5">
+        <div  style={{ backgroundImage: `url(${recipe.image})`, backgroundSize:"cover", backgroundColor:"rgba(0,0,0,0.5)" }} className="position-relative d-flex align-items-center justify-content-center p-5">
           <div className="overlay bg-dark position-absolute" />
-          <h1 className="display-4 position-relative text-white">
+          <h1 className="display-4 position-relative text-dark">
             {recipe.name}
           </h1>
         </div>
@@ -159,7 +186,7 @@ class Recipe extends React.Component {
                     </ul>
                 </div>
                 <div className="col-sm-12 col-lg-2">
-                    <button type="button" className="btn btn-danger">
+                    <button type="button" className="btn btn-danger" onClick={this.deleteRecipe}>
                         Suprimer
                     </button>
                 </div>
