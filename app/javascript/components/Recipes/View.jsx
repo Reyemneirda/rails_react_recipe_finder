@@ -4,7 +4,22 @@ import { Link } from "react-router-dom";
 class Recipe extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { recipe: {ingredients:"", tags:""}};
+    this.state = { recipe: {ingredients:"", tags:""}, similar: []};
+  } 
+
+  getSimilarRecipes(){
+    this.setState({}, () => {
+      const url = "/api/v0/recipes/search?limit=4&t=" + this.state.recipe.tags;
+      fetch(url)
+        .then(response => {
+          if (response.ok) {
+            console.log(response);
+            return response.json();
+          }
+          throw new Error("Network response was not ok.");
+        })
+        .then(response => this.setState({ similar: response }))
+    });
   }
 
   componentDidMount() {
@@ -23,24 +38,23 @@ class Recipe extends React.Component {
         }
         throw new Error("Network response was not ok.");
       })
-      .then(response => this.setState({ recipe: response }))
+      .then(response => {
+        this.setState({ recipe: response }) 
+        this.getSimilarRecipes()
+      })
       .catch((e) => {
           console.log(JSON.stringify(e));
         //   this.props.history.push("/recipes")
         });
+      
   }
-
+  
   render() {
-    const { recipe } = this.state;
+    const { recipe, similar } = this.state;
     let ingredientList = "Pas d'ingrédients fournis";
     let tagList = "Pas de mots clés"
     let colors = ["primary", "secondary", "success", "danger", "warning", "info", "light","dark"]
-    console.log(recipe);
-    // if (recipe.tags.length > 0 ) {
-    //     tagList = recipe.tags.map((tag, i)=>{
-    //         <span key={i} className={`badge badge-pill badge-${colors[i]}`}>{tag}</span>     
-    //     });
-    // }
+
     if (recipe.tags.length > 0) {
         tagList = recipe.tags
           .map((tag, index) => (
@@ -56,6 +70,32 @@ class Recipe extends React.Component {
           </li>
         ));
     }
+    const similarRecipe = similar.map((recipe, index) => (
+      <div key={index} className="col-md-6 col-lg-3">
+        <div className="card mb-4">
+          {recipe.image ? <img
+              src={recipe.image}
+              className="card-img-top"
+              alt={`${recipe.name} image`}
+            /> : "" }
+          <div className="card-body">
+            <h5 className="card-title">{recipe.name}</h5>
+            
+            
+            <ul>
+              {recipe.tags.map((number, index) =>
+                <li key={index}>{number}</li>
+              )}
+            </ul>
+
+            <Link to={`/recipe/${recipe.id}`} className="btn btn-success">
+              Voir
+            </Link>
+          </div>
+        </div>
+      </div>
+    ));
+
 
     return (
       <div className="">
@@ -126,7 +166,13 @@ class Recipe extends React.Component {
                     </button>
                 </div>
             </div>
-          
+            <div className="row">
+              <h1>Recettes similaires</h1>
+              <div className="row">
+                {similarRecipe}
+              </div>
+
+            </div>
         </div>
       </div>
     );

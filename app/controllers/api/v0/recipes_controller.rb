@@ -5,9 +5,23 @@ class Api::V0::RecipesController < ApplicationController
     end
 
     def search
+      if params['t'].present?
+        tags = params[:t].split(",")
+        if params['limit'].present?
+          recipe = Recipe.where("tags @> ARRAY[?]::varchar[]", tags).limit(params['limit']).where.not(id: params[:id])
+        else
+          recipe = Recipe.where("tags @> ARRAY[?]::varchar[]", @tags)
+        end
+        render json: recipe
+      end
+
       if params['q'].present?
         @query = params['q']
-        recipe = Recipe.where("lower(name) like ?", "%#{@query.downcase}%").or(Recipe.where("array_to_string(ingredients, '||') LIKE ?", "%#{@query.downcase}%" "%gem%")).or(Recipe.where("array_to_string(tags, '||') LIKE ?", "%#{@query.downcase}%" "%gem%"))
+        if params['limit'].present?
+          recipe = Recipe.where("lower(name) like ?", "%#{@query.downcase}%").or(Recipe.where("array_to_string(ingredients, '||') LIKE ?", "%#{@query.downcase}%" "%gem%")).or(Recipe.where("array_to_string(tags, '||') LIKE ?", "%#{@query.downcase}%" "%gem%")).limit(params['limit'])
+        else
+          recipe = Recipe.where("lower(name) like ?", "%#{@query.downcase}%").or(Recipe.where("array_to_string(ingredients, '||') LIKE ?", "%#{@query.downcase}%" "%gem%")).or(Recipe.where("array_to_string(tags, '||') LIKE ?", "%#{@query.downcase}%" "%gem%"))
+        end
         render json: recipe
       end
     end
