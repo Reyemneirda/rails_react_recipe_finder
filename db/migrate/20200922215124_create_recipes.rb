@@ -4,7 +4,7 @@ class CreateRecipes < ActiveRecord::Migration[6.0]
       t.string :rate
       t.string :author_tip
       t.string :budget
-      t.string :prep_time,
+      t.string :prep_time
       t.string :name, null: false
       t.string :author
       t.string :difficulty
